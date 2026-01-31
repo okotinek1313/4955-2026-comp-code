@@ -1,4 +1,4 @@
-# 4955 Compition code
+# 4955 Competition code
 
 ## Java
 ## Command Based
