@@ -55,6 +55,8 @@ public class Drive extends SubsystemBase{
     SparkClosedLoopController leftController;
     SparkClosedLoopController righController;
     PIDController gyroController = new PIDController(0.006, 0, 0);
+    long initial_tank = 0;
+    boolean prevtank = false;
 
         Pose2d pose;
   StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
@@ -294,12 +296,33 @@ field.setRobotPose(pose);
       backRight.setVoltage(voltage);
     }
 
+    
+
     boolean turntoAngle(double angle){
-      
+      if(Math.abs((gyro.getAngle()%360)-angle)>30){
+        gyroController.setPID(0.006, 0, 0);
+      }else{
+        gyroController.setPID(0.03, 0.01, 0);
+      }
     double out = -gyroController.calculate(gyro.getYaw(),angle);
       SmartDashboard.putNumber("pidOUT", out);
       DD.arcadeDrive(0, out);
 
-      return false;      
+
+
+      if (!prevtank && gyroController.atSetpoint()) {
+        initial_tank = System.currentTimeMillis();
+      }
+
+      if (prevtank&&System.currentTimeMillis() - initial_tank>1000) {
+         SmartDashboard.putBoolean("Tanked", true);
+      }else{
+        SmartDashboard.putBoolean("Tanked", false);
+      }
+
+      prevtank = gyroController.atSetpoint();
+
+     
+      return gyroController.atSetpoint(); 
     }
 }
