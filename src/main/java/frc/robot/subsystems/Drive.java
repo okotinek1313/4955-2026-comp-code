@@ -22,14 +22,8 @@ public class Drive extends SubsystemBase {
         double LeftStick = Controller.getLeftX();
         double speed;
 
-        if (rt > 0.05) {
-            speed = rt;
-        } else {
-            if (lt > 0.05) {
-                speed = -lt;
-            } else {
-                speed = 0;
-            }
+        if (Controller.getLeftTriggerAxis()>0.05) speed = Controller.getLeftTriggerAxis(); else{
+            if (Controller.getRightTriggerAxis()>0.05) speed = -Controller.getRightTriggerAxis(); else speed = 0;
         }
 
         DD.arcadeDrive(speed,LeftStick);
